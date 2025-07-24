@@ -1,10 +1,12 @@
 import { SpotifyLoginButton } from '@/components/SpotifyLoginButton';
 import { Waveform } from '@/components/Waveform';
+import { ErrorAlert } from '@/components/ErrorAlert';
 import { Music } from 'lucide-react';
 
 export default function Home() {
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background p-8 text-center">
+      <ErrorAlert />
       <Waveform />
       <div className="relative z-10 flex flex-col items-center">
         <div className="mb-6 flex items-center gap-4 text-primary">

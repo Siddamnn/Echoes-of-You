@@ -7,9 +7,20 @@ const SPOTIFY_REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI;
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get('code');
+  const error = searchParams.get('error');
+  const state = searchParams.get('state');
+
+  console.log('Spotify callback received:', { code: !!code, error, state });
+
+  // Handle authorization errors (user denied access, etc.)
+  if (error) {
+    console.error('Spotify authorization error:', error);
+    return NextResponse.redirect(new URL(`/?error=${error}`, request.url));
+  }
 
   if (!code) {
-    return NextResponse.redirect(new URL('/?error=state_mismatch', request.url));
+    console.error('No authorization code received');
+    return NextResponse.redirect(new URL('/?error=no_code', request.url));
   }
 
   try {

@@ -1,11 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 
 export async function GET(request: NextRequest) {
-  const cookieStore = cookies();
-  cookieStore.delete('spotify_access_token');
-  cookieStore.delete('spotify_refresh_token');
-  cookieStore.delete('spotify_expires_at');
+  const response = NextResponse.redirect(new URL('/', request.url));
+  
+  // Clear all Spotify-related cookies
+  response.cookies.set('spotify_access_token', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 0,
+    path: '/',
+  });
+  
+  response.cookies.set('spotify_refresh_token', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 0,
+    path: '/',
+  });
+  
+  response.cookies.set('spotify_expires_at', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 0,
+    path: '/',
+  });
 
-  return NextResponse.redirect(new URL('/', request.url));
+  return response;
 }

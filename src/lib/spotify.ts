@@ -36,16 +36,31 @@ export interface RecentlyPlayedItem {
 }
 
 async function getAccessToken() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const accessToken = cookieStore.get('spotify_access_token')?.value;
   const refreshToken = cookieStore.get('spotify_refresh_token')?.value;
   const expiresAt = Number(cookieStore.get('spotify_expires_at')?.value || '0');
 
+  console.log('Token check:', { 
+    hasAccessToken: !!accessToken, 
+    hasRefreshToken: !!refreshToken, 
+    expiresAt: new Date(expiresAt).toISOString(),
+    isExpired: Date.now() > expiresAt 
+  });
+
+  // If no access token at all, redirect to login
+  if (!accessToken) {
+    console.log('No access token found, redirecting to login');
+    return redirect('/');
+  }
+
+  // If token is expired, try to refresh it
   if (Date.now() > expiresAt) {
     if (!refreshToken) {
       console.log('No refresh token, redirecting to login');
       return redirect('/');
     }
+    console.log('Token expired, attempting refresh');
     return refreshAccessToken(refreshToken);
   }
 
@@ -78,7 +93,7 @@ export async function refreshAccessToken(refreshToken: string) {
   const { access_token, expires_in } = data;
   const newExpiresAt = Date.now() + expires_in * 1000;
 
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   cookieStore.set('spotify_access_token', access_token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
