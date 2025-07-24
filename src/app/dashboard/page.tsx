@@ -11,6 +11,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function DashboardPage() {
   try {
+    // Fetch all required data
     const [user, topArtistsData, recentlyPlayedData, topTracksData] = await Promise.all([
       getMe(),
       getTopArtists(),
@@ -32,7 +33,17 @@ export default async function DashboardPage() {
       favoriteGenres: favoriteGenres.join(', '),
     };
 
-    const poemData = await generateLyricSummary(aiInput);
+    // Generate AI summary (with error handling)
+    let poemData;
+    try {
+      poemData = await generateLyricSummary(aiInput);
+    } catch (aiError) {
+      console.error('AI generation failed:', aiError);
+      // Provide a fallback poem
+      poemData = {
+        poem: "Your musical journey speaks volumes,\nA tapestry of sound and soul,\nEach song a chapter in your story,\nTogether making you whole."
+      };
+    }
 
     const moodCards = topTracks.map(track => ({
       id: track.id,
@@ -54,6 +65,11 @@ export default async function DashboardPage() {
     
     // Check if this is an authentication error
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    
+    // If it's a redirect error, let it propagate
+    if (errorMessage.includes('NEXT_REDIRECT')) {
+      throw error;
+    }
     
     return (
         <div className="flex h-screen items-center justify-center bg-background text-center">
@@ -88,6 +104,6 @@ export default async function DashboardPage() {
                 )}
             </div>
         </div>
-    )
+    );
   }
 }

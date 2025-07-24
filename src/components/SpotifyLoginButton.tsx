@@ -6,8 +6,15 @@ import { Button } from '@/components/ui/button';
 export function SpotifyLoginButton() {
   const [authUrl, setAuthUrl] = useState('');
   const [error, setError] = useState('');
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
+    
     // We construct the URL on the client-side to ensure env vars are available.
     const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
     const redirectUri = process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URI;
@@ -43,7 +50,7 @@ export function SpotifyLoginButton() {
       console.log('Generated auth URL:', url);
       setAuthUrl(url);
     }
-  }, []);
+  }, [isClient]);
 
   const handleClick = (e: React.MouseEvent) => {
     if (!authUrl) {
@@ -53,6 +60,19 @@ export function SpotifyLoginButton() {
     }
     console.log('Redirecting to:', authUrl);
   };
+
+  // Don't render anything until client-side hydration is complete
+  if (!isClient) {
+    return (
+      <Button
+        disabled
+        size="lg"
+        className="bg-primary text-primary-foreground text-lg font-bold py-6 px-10 rounded-full"
+      >
+        Loading...
+      </Button>
+    );
+  }
 
   if (error) {
     return (

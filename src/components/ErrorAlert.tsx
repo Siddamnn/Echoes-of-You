@@ -4,8 +4,9 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle, X } from 'lucide-react';
+import { Suspense } from 'react';
 
-export function ErrorAlert() {
+function ErrorAlertContent() {
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [showError, setShowError] = useState(false);
@@ -43,5 +44,13 @@ export function ErrorAlert() {
         </button>
       </Alert>
     </div>
+  );
+}
+
+export function ErrorAlert() {
+  return (
+    <Suspense fallback={null}>
+      <ErrorAlertContent />
+    </Suspense>
   );
 }
