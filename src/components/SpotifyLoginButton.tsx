@@ -18,9 +18,6 @@ export function SpotifyLoginButton() {
     // We construct the URL on the client-side to ensure env vars are available.
     const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
     const redirectUri = process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URI;
-
-    console.log('Spotify Client ID:', clientId);
-    console.log('Spotify Redirect URI:', redirectUri);
     
     if (!clientId) {
       setError('Spotify Client ID is missing');
@@ -47,7 +44,6 @@ export function SpotifyLoginButton() {
         ' '
       )}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}`;
       
-      console.log('Generated auth URL:', url);
       setAuthUrl(url);
     }
   }, [isClient]);
@@ -58,7 +54,6 @@ export function SpotifyLoginButton() {
       console.error('Auth URL not available:', error || 'Unknown error');
       return;
     }
-    console.log('Redirecting to:', authUrl);
   };
 
   // Don't render anything until client-side hydration is complete

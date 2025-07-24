@@ -13,7 +13,7 @@ import {
 export function FooterActions() {
     const handleActionClick = (action: string) => {
         // Placeholder for future functionality
-        console.log(`${action} clicked`);
+        // TODO: Implement action handlers
     }
 
   return (
